@@ -19,19 +19,21 @@ set status_on_top #put status line at top
 set sort=threads #sort by message threads in index
 set status_format=" %r %b %f %n Del %d Msgs %m %l %> (%P)"
 set pager_format="%-10.10i %[!%a %b %d %R]"
-set date_format="!%H:%M %a %d %b "
-set index_format="%D %4C %Z %[] %-15.15F %s"
+set date_format="!%H:%M %a %d %b %Y"
+set index_format="%D  %Z %[] %-15.15F  %s"
 set folder_format="%2C %t %8s %d %N %f"
 set text_flowed=yes
 set mbox_type=Maildir
+set charset = UTF-8
+set alias_file=~/.mutt/aliases 
+source $alias_file
 ignore *
 unignore ^from: ^date: ^subject: ^to: ^cc:
-
 #
 # #set sendmail="/usr/bin/nbsmtp -d isp.net -h smtp.isp.net -f yourname@isp.net"
 #
 set from="your email address" #set to your from address
-set realname="Bhaskar Chowdhury"
+set realname="your real name"
 #
 # set record="$home/sent" #sent mail is saved here
 set delete=yes #delete without prompting
@@ -44,10 +46,11 @@ set to_chars=" +TCF" #no L for mail_list
 #
 set folder="imaps://imap.gmail.com:993"
 set spoolfile="+INBOX"
+set record ="+[Gmail]/Sent Mail"
 set header_cache=~/.mutt/cache/headers
 set message_cachedir=~/.mutt/cache/bodies
 #gpg
-set pgp_sign_as="9F017E9D66B07216543CEBB0B23A9DB7114B2915"
+set pgp_sign_as="your pgp sign key"
 set crypt_use_gpgme=yes
 set crypt_replysign=yes
 set crypt_replysignencrypted=yes
@@ -74,23 +77,26 @@ set pgp_timeout=3600
 #set pgp_good_sign="^\\[GNUPG:\\] GOODSIG"
 
  mailboxes =inbox
- mailboxes =Airtel_Mobile_Bill
+# mailboxes =Airtel_Mobile_Bill
  mailboxes =Blackberry_Travel
  mailboxes =inbox/LWN 
- mailboxes =Sent
- mailboxes =Credit_Card
+ mailboxes =sent
+ #mailboxes =Credit_Card
  mailboxes =Documents
  mailboxes =Geek_Stuff
  mailboxes =linux-kernel
  mailboxes =unix_tips
  mailboxes =Visa
- mailboxes =Electricity_Bills
- mailboxes =Income_Tax
- mailboxes =PrivateInternetAAccess
- mailboxes =unix_tips
+ #mailboxes =Electricity_Bills
+ #mailboxes =Income_Tax
+ #mailboxes =PrivateInternetAAccess
+ mailboxes ="[Gmail]/Sent Mail"
 
-set smtp_url="smtp://username@smtp.yourmaildomainprovider.com:587/"
-set smtp_pass="your mail password"
+
+auto_view text/html
+set mailcap_path=~/.mutt/mailcap
+set smtp_url="smtp://"your user name"@smtp.gmail.com:587/"
+set smtp_pass="your smtp password"
 #save-hook .*=keep #default mbox to (s)ave mail is =keep
 # subscribe gentoo-user gentoo-dev #subscribed to these lists
 #
@@ -124,13 +130,36 @@ color quoted1 magenta blue
 # #color quoted3 red default
 # #color signature cyan cyan
 #
-#
+#How to color individual mail id on index page
+color index yellow default '~f gregkh@linuxfoundation.org'
+
+color index brightcyan default '~f torvalds@linux-foundation.org'
+
+color index green default '~f akpm@linux-foundation.org'
+
+color index red default '~f konstantin@linuxfoundation.org'
+
+color index cyan default '~f viro@zeniv.linux.org.uk'
+
+color index brightred default '~f sfr@canb.auug.org.au'
+
+color index brightyellow default '~f davem@davemloft.net'
+
+color index brightgreen default '~f paulmck@linux.ibm.com'
+
+color index brightwhite default '~f corbet@lwn.net'
+
+color index brightblue default '~f peterz@infradead.org'
+
+color index brightmagenta default '~f mingo@kernel.org' 
+
 # #this color setup is copied from /etc/mutt/Muttrc.color
 # #comment it out if you want the default colors in /etc/mutt/Muttrc
 # # Je vois la vie en rose :-)
 color hdrdefault brightcyan blue
 color header brightwhite blue "^from:"
 color header brightwhite blue "^subject:"
+#color index red default ~P
 #
 color quoted brightgreen blue
 color signature brightwhite blue
@@ -198,3 +227,19 @@ color indicator cyan black
 color sidebar_new green black
 # Color to give mailboxes containing no new/flagged mail, etc.
 #color sidebar_ordinary color245 default
+#
+#
+#Open attachment with program
+#
+macro attach O \
+"\
+<enter-command>unset wait_key<enter>\
+<shell-escape>rm -f /tmp/mutt-attach<enter>\
+<save-entry><kill-line>/tmp/mutt-attach<enter>\
+<shell-escape> /tmp/mutt-attach &^A\
+"
+
+set editor="vim -c 'set spell spelllang=en'" 
+
+
+folder-hook linux-kernel             'push <tag-pattern>~r>1w!~F<enter>'
