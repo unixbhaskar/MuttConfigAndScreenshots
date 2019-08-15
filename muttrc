@@ -24,7 +24,8 @@ set index_format="%D  %Z %[] %-15.15F  %s"
 set folder_format="%2C %t %8s %d %N %f"
 set text_flowed=yes
 set mbox_type=Maildir
-set charset = UTF-8
+set charset=UTF-8
+set maildir_header_cache_verify=no
 set alias_file=~/.mutt/aliases 
 source $alias_file
 ignore *
