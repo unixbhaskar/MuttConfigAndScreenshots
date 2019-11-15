@@ -8,24 +8,26 @@
 # *impossible* currently in mutt to remove color settings from objects
 # other than the index.
 #
-
-set imap_user = "your email address"
-set imap_pass = "your password"
+source "gpg2 -dq $HOME/.mail.cred.gpg |"
+set imap_user = "unixbhaskar@gmail.com"
+set imap_pass =$my_pass 
 set pager_context=1
 set pager_index_lines=6 #show a mini-index in pager
 set menu_scroll
 set pgp_verify_sig=yes #dont show pgp in pager
-set status_on_top #put status line at top
+#set status_on_top #put status line at top
 set sort=threads #sort by message threads in index
 set status_format=" %r %b %f %n Del %d Msgs %m %l %> (%P)"
 set pager_format="%-10.10i %[!%a %b %d %R]"
 set date_format="!%H:%M %a %d %b %Y"
-set index_format="%D  %Z %[] %-15.15F  %s"
+#set index_format="%D  %Z  %[] %-15.15F  %s"
+set index_format="%D  %Z  %[]  %-30.30F (%-4.4c) %s"
 set folder_format="%2C %t %8s %d %N %f"
 set text_flowed=yes
 set mbox_type=Maildir
 set charset=UTF-8
 set maildir_header_cache_verify=no
+#set arrow_cursor = yes 
 set alias_file=~/.mutt/aliases 
 source $alias_file
 ignore *
@@ -33,8 +35,8 @@ unignore ^from: ^date: ^subject: ^to: ^cc:
 #
 # #set sendmail="/usr/bin/nbsmtp -d isp.net -h smtp.isp.net -f yourname@isp.net"
 #
-set from="your email address" #set to your from address
-set realname="your real name"
+set from="unixbhaskar@gmail.com" #set to your from address
+set realname="Bhaskar Chowdhury"
 #
 # set record="$home/sent" #sent mail is saved here
 set delete=yes #delete without prompting
@@ -43,7 +45,8 @@ set fast_reply=yes #no prompting on reply
 set beep=no #no noise
 set markers=no #no + on wrapped lines
 set confirmappend=no #no prompt for save to =keep
-set to_chars=" +TCF" #no L for mail_list
+set to_chars=" +TCFL" #no L for mail_list
+set send_charset="us-ascii:utf-8"
 #
 set folder="imaps://imap.gmail.com:993"
 set spoolfile="+INBOX"
@@ -51,7 +54,7 @@ set record ="+[Gmail]/Sent Mail"
 set header_cache=~/.mutt/cache/headers
 set message_cachedir=~/.mutt/cache/bodies
 #gpg
-set pgp_sign_as="your pgp sign key"
+set pgp_sign_as="9F017E9D66B07216543CEBB0B23A9DB7114B2915"
 set crypt_use_gpgme=yes
 set crypt_replysign=yes
 set crypt_replysignencrypted=yes
@@ -78,26 +81,20 @@ set pgp_timeout=3600
 #set pgp_good_sign="^\\[GNUPG:\\] GOODSIG"
 
  mailboxes =inbox
-# mailboxes =Airtel_Mobile_Bill
  mailboxes =Blackberry_Travel
  mailboxes =inbox/LWN 
  mailboxes =sent
- #mailboxes =Credit_Card
  mailboxes =Documents
  mailboxes =Geek_Stuff
  mailboxes =linux-kernel
  mailboxes =unix_tips
- mailboxes =Visa
- #mailboxes =Electricity_Bills
- #mailboxes =Income_Tax
- #mailboxes =PrivateInternetAAccess
  mailboxes ="[Gmail]/Sent Mail"
-
+ mailboxes =inbox/Google_Alert
 
 auto_view text/html
 set mailcap_path=~/.mutt/mailcap
-set smtp_url="smtp://"your user name"@smtp.gmail.com:587/"
-set smtp_pass="your smtp password"
+set smtp_url="smtp://unixbhaskar@smtp.gmail.com:587/"
+set smtp_pass=$my_pass
 #save-hook .*=keep #default mbox to (s)ave mail is =keep
 # subscribe gentoo-user gentoo-dev #subscribed to these lists
 #
@@ -148,11 +145,19 @@ color index brightyellow default '~f davem@davemloft.net'
 
 color index brightgreen default '~f paulmck@linux.ibm.com'
 
+color index brightgreen default '~f paulmck@kernel.org'
+
 color index brightwhite default '~f corbet@lwn.net'
 
 color index brightblue default '~f peterz@infradead.org'
 
 color index brightmagenta default '~f mingo@kernel.org' 
+
+color index magenta default '~f tytso@mit.edu'
+
+color index blue default '~f hpa@zytor.com'
+
+color index brightcyan default '~f unixbhaskar@gmail.com'
 
 # #this color setup is copied from /etc/mutt/Muttrc.color
 # #comment it out if you want the default colors in /etc/mutt/Muttrc
@@ -169,7 +174,7 @@ color indicator blue green
 #
 color error red black
 mono error bold
-color status black cyan
+color status brightgreen black 
 mono status bold
 color tree yellow blue
 #
@@ -243,4 +248,40 @@ macro attach O \
 set editor="vim -c 'set spell spelllang=en'" 
 
 
-folder-hook linux-kernel             'push <tag-pattern>~r>1w!~F<enter>'
+folder-hook linux-kernel             'push <delete-pattern>~r>1w!~F<enter><sync>'
+
+folder-hook inbox/Google_Alert       'push <delete-pattern>~r>1w!~F<enter><sync>' 
+
+auto_view text/* application/* image/* audio/*
+
+lists linux-kernel@vger.kernel.org
+subscribe [0-9]+.*@vger.kernel.org
+
+#Status Bar
+set status_chars  = " *%A"
+set status_format = "[ Folder: %f ]───[%r%m messages%?n? (%n new)?%?d? (%d to delete)?%?t? (%t tagged)? ]───%>─%?p?( %p postponed )?"
+
+
+#macro index <F6> \
+#"<enter-command>set my_old_pipe_decode=\$pipe_decode my_old_wait_key=\$wait_key nopipe_decode nowait_key<enter>\
+#<shell-escape>notmuch-mutt -r --prompt search<enter>\
+#<change-folder-readonly>`echo ${XDG_CACHE_HOME:-$HOME/.cache}/notmuch/mutt/results`<enter>\
+#<enter-command>set pipe_decode=\$my_old_pipe_decode wait_key=\$my_old_wait_key<enter>" \
+#"notmuch: search mail"
+
+#macro index <F9> \
+#"<enter-command>set my_old_pipe_decode=\$pipe_decode my_old_wait_key=\$wait_key nopipe_decode nowait_key<enter>\
+#<pipe-message>notmuch-mutt -r thread<enter>\
+#<change-folder-readonly>`echo ${XDG_CACHE_HOME:-$HOME/.cache}/notmuch/mutt/results`<enter>\
+#<enter-command>set pipe_decode=\$my_old_pipe_decode wait_key=\$my_old_wait_key<enter>" \
+#"notmuch: reconstruct thread"
+
+#macro index <F10> \
+#"<enter-command>set my_old_pipe_decode=\$pipe_decode my_old_wait_key=\$wait_key nopipe_decode nowait_key<enter>\
+#<pipe-message>notmuch-mutt tag -- -inbox<enter>\
+#<enter-command>set pipe_decode=\$my_old_pipe_decode wait_key=\$my_old_wait_key<enter>" \
+#"notmuch: remove message from inbox"
+
+
+#macro index / "<enter-command>unset wait_key<enter><shell-escape>~/bin/mutt-notmuch-py<enter><change-folder-readonly>~/.cache/mutt_results<enter>" \
+#            "search mail (using notmuch)"
